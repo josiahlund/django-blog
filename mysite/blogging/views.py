@@ -1,13 +1,16 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
+from django.views.generic import ListView
 from .models import Post
 
 
-def list_view(request):
-    published = Post.objects.exclude(published_date__exact=None)
-    posts = published.order_by('-published_date')
-    context = {'posts': posts}
-    return render(request, 'blogging/list.html', context)
+class PostListView(ListView):
+    model = Post
+    template_name = 'blogging/list.html'
+
+    def get_queryset(self):
+        published = Post.objects.exclude(published_date__exact=None)
+        return published.order_by('-published_date')
 
 
 def detail_view(request, post_id):
